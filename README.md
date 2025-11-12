@@ -68,6 +68,16 @@ Contributing
 - Add tests/examples for larger changes.
 - See CONTRIBUTING.md if present.
 
+Formatting
+- This repo uses a formatter configured in the `app` package. Before committing, run the formatter from the `app` directory:
+
+```bash
+cd app
+pnpm run format
+```
+
+- The repository includes a GitHub Actions check that runs on pushes and pull requests targeting the `Development` branch. The check will fail if formatting makes changes — please commit formatted files before opening or updating a PR so merges are not blocked.
+
 License
 This repository is licensed under GNU General Public License v3.0 (GPLv3). See the LICENSE file for full terms.
 

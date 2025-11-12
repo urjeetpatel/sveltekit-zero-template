@@ -1,0 +1,49 @@
+name: Format check
+
+on:
+  pull_request:
+    branches: [Development]
+    types: [opened, synchronize, reopened]
+  push:
+    branches: [Development]
+
+jobs:
+  format:
+    name: Run formatter
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'pnpm'
+
+      - name: Enable Corepack and prepare pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@latest --activate
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        working-directory: app
+
+      - name: Run formatter
+        run: pnpm run format
+        working-directory: app
+
+      - name: Fail if formatting changed files
+        run: |
+          # If the formatter modified files, the working tree will be dirty.
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "Formatting changed files. Please run 'pnpm run format' locally and commit the changes." >&2
+            echo "--- git status ---" >&2
+            git --no-pager status --porcelain >&2
+            echo "--- git diff ---" >&2
+            git --no-pager --no-color diff >&2
+            exit 1
+          fi
